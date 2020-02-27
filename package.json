@@ -1,4 +1,9 @@
 {
+  "name": "iam-hcl-converter",
+  "version": "1.0.0",
+  "license": "AGPLv3",
+  "main": "dist/main.js",
+  "author": {"email": "qhua948@aucklanduni.ac.nz", "name": "Eddy"},
   "dependencies": {
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.7.6",
@@ -7,6 +12,7 @@
     "typescript": "^3.8.2"
   },
   "devDependencies": {
+    "jest": "^25.1.0",
     "tslint": "^6.0.0"
   }
 }

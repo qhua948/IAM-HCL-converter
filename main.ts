@@ -1,15 +1,6 @@
 import _ from "lodash";
-import fs from "fs";
-
-export function main() {
-  let buffer = fs.readFileSync(0);
-  const converter = new Converter(2);
-  const data = converter.convert(buffer.toString());
-  console.log(data);
-}
 
 class Indenter {
-
   indentBase: number;
   currIndent: number;
   stringer: string[];
@@ -25,11 +16,11 @@ class Indenter {
   }
 
   public dec() {
-    this.currIndent = _.max([0, this.currIndent - this.indentBase]) as number
+    this.currIndent = _.max([0, this.currIndent - this.indentBase]) as number;
   }
 
   public logWithIndent(msg: string) {
-    this.stringer.push(_.repeat(' ', this.currIndent) + msg);
+    this.stringer.push(_.repeat(" ", this.currIndent) + msg);
   }
 
   public logListWithIndent(header: string, msgs: string[]) {
@@ -37,11 +28,11 @@ class Indenter {
     this.inc();
     msgs.forEach(e => this.logWithIndent(`\"${e}\",`));
     this.dec();
-    this.logWithIndent(']');
+    this.logWithIndent("]");
   }
 }
 
-export class Converter {
+export default class Converter {
   indenter: Indenter;
   stringer: Array<string>;
 
@@ -54,20 +45,20 @@ export class Converter {
     this.stringer.push(str);
   }
 
-  public convert(json: string) {
+  public convert(json: string): string {
     const parsed = JSON.parse(json);
-    
+
     // Do sanity check
-    if (!_.has(parsed, 'Statement')) {
-      Converter.fail("No Statment clause found", 1)
+    if (!_.has(parsed, "Statement")) {
+      Converter.fail("No Statment clause found");
     }
 
-    if (_.has(parsed, 'Version')) {
-      this.appendStringLn(`version = \"${parsed['Version']}\"`);
+    if (_.has(parsed, "Version")) {
+      this.appendStringLn(`version = \"${parsed["Version"]}\"`);
     }
 
-    if (_.has(parsed, 'Id')) {
-      this.appendStringLn(`policy_id = \"${parsed['Id']}\"`);
+    if (_.has(parsed, "Id")) {
+      this.appendStringLn(`policy_id = \"${parsed["Id"]}\"`);
     }
 
     const curriedProcessNotPrincipalFn = (p: string) => {
@@ -75,10 +66,10 @@ export class Converter {
     };
 
     const processList: Array<Array<any>> = [
-      ['Statement', this.processStatements],
-      ['Principal', this.processPrincipal],
-      ['NotPrincipal', curriedProcessNotPrincipalFn],
-      ['Condition', this.processCondition],
+      ["Statement", this.processStatements],
+      ["Principal", this.processPrincipal],
+      ["NotPrincipal", curriedProcessNotPrincipalFn],
+      ["Condition", this.processCondition]
     ];
     let that = this;
     processList.forEach(e => {
@@ -92,7 +83,7 @@ export class Converter {
       }
     });
 
-    return _.join(this.stringer, '\n');
+    return _.join(this.stringer, "\n");
   }
 
   static arrayify(obj: any): object[] {
@@ -108,67 +99,69 @@ export class Converter {
       return;
     }
 
-    this.indenter.logListWithIndent(header, Converter.arrayify(_.get(chunk, jsonKey)).map(e => e.toString()));
+    this.indenter.logListWithIndent(
+      header,
+      Converter.arrayify(_.get(chunk, jsonKey)).map(e => e.toString())
+    );
   }
 
   processCondition(condition: any) {
-    this.appendStringLn('condition {');
+    this.appendStringLn("condition {");
 
     const ckeys = _.keys(condition);
     if (ckeys.length > 1) {
-      Converter.fail('Condition has too many keys');
+      Converter.fail("Condition has too many keys");
     }
 
     this.indenter.logWithIndent(`test = \"${ckeys[0]}`);
 
     const vkeys = _.keys(_.get(condition, ckeys[0]));
     if (vkeys.length > 1) {
-      Converter.fail('Condition has too many variable keys');
+      Converter.fail("Condition has too many variable keys");
     }
 
     this.indenter.logWithIndent(`variable = \"${vkeys[0]}`);
-    
-    this.processArray(_.get(condition, ckeys[0]), 'values', vkeys[0]);
+
+    this.processArray(_.get(condition, ckeys[0]), "values", vkeys[0]);
   }
 
   processPrincipal(principal: any, not: boolean = false) {
-    this.appendStringLn(`${not ? 'not_': ''}principal {`);
+    this.appendStringLn(`${not ? "not_" : ""}principal {`);
 
     // Check if it is wildcard principal
-    if (principal === '*') {
-      principal = { AWS: '*' };
+    if (principal === "*") {
+      principal = { AWS: "*" };
     }
 
-    const pkeys = _.keys(principal)
+    const pkeys = _.keys(principal);
     if (pkeys.length > 1) {
-      Converter.fail('Principal has too many keys');
+      Converter.fail("Principal has too many keys");
     }
 
     this.indenter.logWithIndent(`type = \"${pkeys[0]}`);
 
-    this.processArray(principal, 'identifiers', pkeys[0]);
+    this.processArray(principal, "identifiers", pkeys[0]);
   }
 
   processStatements(chunk: any) {
-    this.appendStringLn('statement {');
+    this.appendStringLn("statement {");
 
-    if (_.has(chunk, 'Sid')) {
-      this.indenter.logWithIndent(`sid = \"${chunk['Sid']}`);
+    if (_.has(chunk, "Sid")) {
+      this.indenter.logWithIndent(`sid = \"${chunk["Sid"]}`);
     }
 
-    const effect = _.get(chunk, 'Effect', 'Allow'); // Defaults to Allow
+    const effect = _.get(chunk, "Effect", "Allow"); // Defaults to Allow
     this.indenter.logWithIndent(`effect = \"${effect}\"`);
 
     arrayToProcess.forEach(e => {
       this.processArray(chunk, e[0], e[1]);
     });
 
-    this.appendStringLn('}');
+    this.appendStringLn("}");
   }
 
-  public static fail(message: string, code: number = 1) {
-    console.error(message);
-    process.exit(code);
+  public static fail(message: string) {
+    throw new Error(message);
   }
 }
 
@@ -176,7 +169,5 @@ const arrayToProcess = [
   ["actions", "Action"],
   ["not_actions", "NotAction"],
   ["resources", "Resource"],
-  ["not_resource", "NotResource"],
+  ["not_resource", "NotResource"]
 ];
-
-main();
