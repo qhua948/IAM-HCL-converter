@@ -1,41 +1,11 @@
 import _ from "lodash";
 import fs from "fs";
-import chalk from "chalk";
 
 export function main() {
   let buffer = fs.readFileSync(0);
   const converter = new Converter(2);
   const data = converter.convert(buffer.toString());
   console.log(data);
-}
-
-interface IAMPolicy {
-  version: string;
-  policy_id: string;
-  statements: IAMPolicyStatement[];
-}
-
-interface IAMPolicyStatement {
-  sid: string;
-  effect: string;
-  actions: string[];
-  not_actions: string[];
-  resources: string[];
-  not_resources: string[];
-  principals: IAMPolicyPrincipal[];
-  not_principals: IAMPolicyPrincipal[];
-  condition: IAMPolicyCondition;
-}
-
-interface IAMPolicyPrincipal {
-  type: string;
-  identifiers: string[];
-}
-
-interface IAMPolicyCondition {
-  test: string;
-  variable: string;
-  value: string[];
 }
 
 class Indenter {
@@ -197,7 +167,7 @@ export class Converter {
   }
 
   public static fail(message: string, code: number = 1) {
-    chalk.red(`${message}`);
+    console.error(message);
     process.exit(code);
   }
 }

@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 var lodash_1 = __importDefault(require("lodash"));
 var fs_1 = __importDefault(require("fs"));
-var chalk_1 = __importDefault(require("chalk"));
 function main() {
     var buffer = fs_1["default"].readFileSync(0);
     var converter = new Converter(2);
@@ -71,7 +70,6 @@ var Converter = /** @class */ (function () {
         ];
         var that = this;
         processList.forEach(function (e) {
-            e[1].bind(that);
             if (lodash_1["default"].has(parsed, e[0])) {
                 if (lodash_1["default"].isArray(parsed[e[0]])) {
                     // Principal is an array
@@ -141,7 +139,7 @@ var Converter = /** @class */ (function () {
     };
     Converter.fail = function (message, code) {
         if (code === void 0) { code = 1; }
-        chalk_1["default"].red("" + message);
+        console.error(message);
         process.exit(code);
     };
     return Converter;
