@@ -100,39 +100,27 @@ export class Converter {
       this.appendStringLn(`policy_id = \"${parsed['Id']}\"`);
     }
 
-    if (_.isArray(parsed['Statement'])) {
-      // Statments is an array
-      parsed['Statement'].forEach(e => this.processStatements(e));
-    } else {
-      this.processStatements(parsed['Statement']);
-    }
+    const curriedProcessNotPrincipalFn = (p: string) => {
+      return this.processPrincipal(p, false);
+    };
 
-    if (_.has(parsed, 'Principal')) {
-      if (_.isArray(parsed['Principal'])) {
-        // Principal is an array
-        parsed['Principal'].forEach(e => this.processPrincipal(e));
-      } else {
-        this.processPrincipal(parsed['Principal']);
+    const processList: Array<Array<any>> = [
+      ['Statement', this.processStatements],
+      ['Principal', this.processPrincipal],
+      ['NotPrincipal', curriedProcessNotPrincipalFn],
+      ['Condition', this.processCondition],
+    ];
+    let that = this;
+    processList.forEach(e => {
+      if (_.has(parsed, e[0])) {
+        if (_.isArray(parsed[e[0]])) {
+          // Principal is an array
+          parsed[e[0]].forEach((i: Array<any>) => e[1].bind(that)(i));
+        } else {
+          e[1](parsed[e[0]]);
+        }
       }
-    }
-
-    if (_.has(parsed, 'NotPrincipal')) {
-      if (_.isArray(parsed['NotPrincipal'])) {
-        // Principal is an array
-        parsed['NotPrincipal'].forEach(e => this.processPrincipal(e, true));
-      } else {
-        this.processPrincipal(parsed['NotPrincipal']);
-      }
-    }
-
-    if (_.has(parsed, 'Condition')) {
-      if (_.isArray(parsed['Condition'])) {
-        // Condition is an array
-        parsed['Condition'].forEach(e => this.processCondition(e));
-      } else {
-        this.processCondition(parsed['Condition']);
-      }
-    }
+    });
 
     return _.join(this.stringer, '\n');
   }

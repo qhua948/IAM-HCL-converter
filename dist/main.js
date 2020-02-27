@@ -60,40 +60,28 @@ var Converter = /** @class */ (function () {
         if (lodash_1["default"].has(parsed, 'Id')) {
             this.appendStringLn("policy_id = \"" + parsed['Id'] + "\"");
         }
-        if (lodash_1["default"].isArray(parsed['Statement'])) {
-            // Statments is an array
-            parsed['Statement'].forEach(function (e) { return _this.processStatements(e); });
-        }
-        else {
-            this.processStatements(parsed['Statement']);
-        }
-        if (lodash_1["default"].has(parsed, 'Principal')) {
-            if (lodash_1["default"].isArray(parsed['Principal'])) {
-                // Principal is an array
-                parsed['Principal'].forEach(function (e) { return _this.processPrincipal(e); });
+        var curriedProcessNotPrincipalFn = function (p) {
+            return _this.processPrincipal(p, false);
+        };
+        var processList = [
+            ['Statement', this.processStatements],
+            ['Principal', this.processPrincipal],
+            ['NotPrincipal', curriedProcessNotPrincipalFn],
+            ['Condition', this.processCondition],
+        ];
+        var that = this;
+        processList.forEach(function (e) {
+            e[1].bind(that);
+            if (lodash_1["default"].has(parsed, e[0])) {
+                if (lodash_1["default"].isArray(parsed[e[0]])) {
+                    // Principal is an array
+                    parsed[e[0]].forEach(function (i) { return e[1].bind(that)(i); });
+                }
+                else {
+                    e[1](parsed[e[0]]);
+                }
             }
-            else {
-                this.processPrincipal(parsed['Principal']);
-            }
-        }
-        if (lodash_1["default"].has(parsed, 'NotPrincipal')) {
-            if (lodash_1["default"].isArray(parsed['NotPrincipal'])) {
-                // Principal is an array
-                parsed['NotPrincipal'].forEach(function (e) { return _this.processPrincipal(e, true); });
-            }
-            else {
-                this.processPrincipal(parsed['NotPrincipal']);
-            }
-        }
-        if (lodash_1["default"].has(parsed, 'Condition')) {
-            if (lodash_1["default"].isArray(parsed['Condition'])) {
-                // Condition is an array
-                parsed['Condition'].forEach(function (e) { return _this.processCondition(e); });
-            }
-            else {
-                this.processCondition(parsed['Condition']);
-            }
-        }
+        });
         return lodash_1["default"].join(this.stringer, '\n');
     };
     Converter.arrayify = function (obj) {
