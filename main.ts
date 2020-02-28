@@ -75,10 +75,9 @@ export default class Converter {
     processList.forEach(e => {
       if (_.has(parsed, e[0])) {
         if (_.isArray(parsed[e[0]])) {
-          // Principal is an array
           parsed[e[0]].forEach((i: Array<any>) => e[1].bind(that)(i));
         } else {
-          e[1](parsed[e[0]]);
+          e[1].bind(that)(parsed[e[0]]);
         }
       }
     });

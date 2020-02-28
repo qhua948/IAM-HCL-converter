@@ -64,11 +64,10 @@ var Converter = /** @class */ (function () {
         processList.forEach(function (e) {
             if (lodash_1["default"].has(parsed, e[0])) {
                 if (lodash_1["default"].isArray(parsed[e[0]])) {
-                    // Principal is an array
                     parsed[e[0]].forEach(function (i) { return e[1].bind(that)(i); });
                 }
                 else {
-                    e[1](parsed[e[0]]);
+                    e[1].bind(that)(parsed[e[0]]);
                 }
             }
         });
