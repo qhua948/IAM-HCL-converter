@@ -112,7 +112,7 @@ var Converter = /** @class */ (function () {
         if (pkeys.length > 1) {
             Converter.fail("Principal has too many keys");
         }
-        this.indenter.logWithIndent("type = \"" + pkeys[0]);
+        this.indenter.logWithIndent("type = \"" + pkeys[0] + "\"");
         this.processArray(principal, "identifiers", pkeys[0]);
     };
     Converter.prototype.processStatements = function (chunk) {

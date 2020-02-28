@@ -137,7 +137,7 @@ export default class Converter {
       Converter.fail("Principal has too many keys");
     }
 
-    this.indenter.logWithIndent(`type = \"${pkeys[0]}`);
+    this.indenter.logWithIndent(`type = \"${pkeys[0]}\"`);
 
     this.processArray(principal, "identifiers", pkeys[0]);
   }
