@@ -61,16 +61,16 @@ export default class Converter {
       this.appendStringLn(`policy_id = \"${parsed["Id"]}\"`);
     }
 
-    const curriedProcessNotPrincipalFn = (p: string) => {
-      return this.processPrincipal(p, false);
-    };
-
     const processList: Array<Array<any>> = [
       ["Statement", this.processStatements],
-      ["Principal", this.processPrincipal],
-      ["NotPrincipal", curriedProcessNotPrincipalFn],
-      ["Condition", this.processCondition]
     ];
+
+    if (_.isArray(parsed['Statement'])) {
+      parsed['Statement'].forEach(e => this.processStatements(e));
+    } else {
+      this.processStatements(parsed['Statement']);
+    }
+
     let that = this;
     processList.forEach(e => {
       if (_.has(parsed, e[0])) {
@@ -146,7 +146,7 @@ export default class Converter {
     this.appendStringLn("statement {");
 
     if (_.has(chunk, "Sid")) {
-      this.indenter.logWithIndent(`sid = \"${chunk["Sid"]}`);
+      this.indenter.logWithIndent(`sid = \"${chunk["Sid"]}\"`);
     }
 
     const effect = _.get(chunk, "Effect", "Allow"); // Defaults to Allow
@@ -154,6 +154,26 @@ export default class Converter {
 
     arrayToProcess.forEach(e => {
       this.processArray(chunk, e[0], e[1]);
+    });
+
+    const curriedProcessNotPrincipalFn = (p: string) => {
+      return this.processPrincipal(p, false);
+    };
+
+    const processList: Array<Array<any>> = [
+      ["Principal", this.processPrincipal],
+      ["NotPrincipal", curriedProcessNotPrincipalFn],
+      ["Condition", this.processCondition]
+    ];
+    let that = this;
+    processList.forEach(e => {
+      if (_.has(chunk, e[0])) {
+        if (_.isArray(chunk[e[0]])) {
+          chunk[e[0]].forEach((i: Array<any>) => e[1].bind(that)(i));
+        } else {
+          e[1].bind(that)(chunk[e[0]]);
+        }
+      }
     });
 
     this.appendStringLn("}");

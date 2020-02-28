@@ -7,3 +7,5 @@ export function main() {
   const data = converter.convert(buffer.toString());
   console.log(data);
 }
+
+main();

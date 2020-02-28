@@ -51,15 +51,15 @@ var Converter = /** @class */ (function () {
         if (lodash_1["default"].has(parsed, "Id")) {
             this.appendStringLn("policy_id = \"" + parsed["Id"] + "\"");
         }
-        var curriedProcessNotPrincipalFn = function (p) {
-            return _this.processPrincipal(p, false);
-        };
         var processList = [
             ["Statement", this.processStatements],
-            ["Principal", this.processPrincipal],
-            ["NotPrincipal", curriedProcessNotPrincipalFn],
-            ["Condition", this.processCondition]
         ];
+        if (lodash_1["default"].isArray(parsed['Statement'])) {
+            parsed['Statement'].forEach(function (e) { return _this.processStatements(e); });
+        }
+        else {
+            this.processStatements(parsed['Statement']);
+        }
         var that = this;
         processList.forEach(function (e) {
             if (lodash_1["default"].has(parsed, e[0])) {
@@ -119,12 +119,31 @@ var Converter = /** @class */ (function () {
         var _this = this;
         this.appendStringLn("statement {");
         if (lodash_1["default"].has(chunk, "Sid")) {
-            this.indenter.logWithIndent("sid = \"" + chunk["Sid"]);
+            this.indenter.logWithIndent("sid = \"" + chunk["Sid"] + "\"");
         }
         var effect = lodash_1["default"].get(chunk, "Effect", "Allow"); // Defaults to Allow
         this.indenter.logWithIndent("effect = \"" + effect + "\"");
         arrayToProcess.forEach(function (e) {
             _this.processArray(chunk, e[0], e[1]);
+        });
+        var curriedProcessNotPrincipalFn = function (p) {
+            return _this.processPrincipal(p, false);
+        };
+        var processList = [
+            ["Principal", this.processPrincipal],
+            ["NotPrincipal", curriedProcessNotPrincipalFn],
+            ["Condition", this.processCondition]
+        ];
+        var that = this;
+        processList.forEach(function (e) {
+            if (lodash_1["default"].has(chunk, e[0])) {
+                if (lodash_1["default"].isArray(chunk[e[0]])) {
+                    chunk[e[0]].forEach(function (i) { return e[1].bind(that)(i); });
+                }
+                else {
+                    e[1].bind(that)(chunk[e[0]]);
+                }
+            }
         });
         this.appendStringLn("}");
     };
