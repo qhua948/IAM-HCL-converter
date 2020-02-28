@@ -60,17 +60,6 @@ var Converter = /** @class */ (function () {
         else {
             this.processStatements(parsed['Statement']);
         }
-        var that = this;
-        processList.forEach(function (e) {
-            if (lodash_1["default"].has(parsed, e[0])) {
-                if (lodash_1["default"].isArray(parsed[e[0]])) {
-                    parsed[e[0]].forEach(function (i) { return e[1].bind(that)(i); });
-                }
-                else {
-                    e[1].bind(that)(parsed[e[0]]);
-                }
-            }
-        });
         return lodash_1["default"].join(this.stringer, "\n");
     };
     Converter.arrayify = function (obj) {

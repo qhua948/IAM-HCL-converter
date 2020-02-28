@@ -71,17 +71,6 @@ export default class Converter {
       this.processStatements(parsed['Statement']);
     }
 
-    let that = this;
-    processList.forEach(e => {
-      if (_.has(parsed, e[0])) {
-        if (_.isArray(parsed[e[0]])) {
-          parsed[e[0]].forEach((i: Array<any>) => e[1].bind(that)(i));
-        } else {
-          e[1].bind(that)(parsed[e[0]]);
-        }
-      }
-    });
-
     return _.join(this.stringer, "\n");
   }
 
