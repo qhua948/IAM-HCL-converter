@@ -82,12 +82,12 @@ var Converter = /** @class */ (function () {
         if (ckeys.length > 1) {
             Converter.fail("Condition has too many keys");
         }
-        this.indenter.logWithIndent("test = \"" + ckeys[0]);
+        this.indenter.logWithIndent("test = \"" + ckeys[0] + "\"");
         var vkeys = lodash_1["default"].keys(lodash_1["default"].get(condition, ckeys[0]));
         if (vkeys.length > 1) {
             Converter.fail("Condition has too many variable keys");
         }
-        this.indenter.logWithIndent("variable = \"" + vkeys[0]);
+        this.indenter.logWithIndent("variable = \"" + vkeys[0] + "\"");
         this.processArray(lodash_1["default"].get(condition, ckeys[0]), "values", vkeys[0]);
     };
     Converter.prototype.processPrincipal = function (principal, not) {

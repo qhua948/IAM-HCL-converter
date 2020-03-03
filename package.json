@@ -1,11 +1,14 @@
 {
   "name": "iam-hcl-converter",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "AGPLv3",
   "main": "dist/main.js",
+  "scripts": {
+    "test": "jest"
+  },
   "author": {
     "email": "qhua948@aucklanduni.ac.nz",
-    "name": "Eddy"
+    "name": "Edward Huang"
   },
   "dependencies": {
     "@types/lodash": "^4.14.149",
@@ -15,6 +18,8 @@
     "typescript": "^3.8.2"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.8.6",
+    "@babel/preset-typescript": "^7.8.3",
     "jest": "^25.1.0",
     "tslint": "^6.0.0"
   }

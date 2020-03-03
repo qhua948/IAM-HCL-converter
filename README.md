@@ -6,3 +6,11 @@ This is a very simple library which converts AWS IAM JSON policies to
 # License
 
 AGPL V3
+
+# Usage
+```javascript
+import Converter from "iam-hcl-converter"
+    const converter = new Converter(2);
+    const res = converter.convert("<JSON POLICY>");
+    console.log(res);
+```

@@ -101,14 +101,14 @@ export default class Converter {
       Converter.fail("Condition has too many keys");
     }
 
-    this.indenter.logWithIndent(`test = \"${ckeys[0]}`);
+    this.indenter.logWithIndent(`test = \"${ckeys[0]}\"`);
 
     const vkeys = _.keys(_.get(condition, ckeys[0]));
     if (vkeys.length > 1) {
       Converter.fail("Condition has too many variable keys");
     }
 
-    this.indenter.logWithIndent(`variable = \"${vkeys[0]}`);
+    this.indenter.logWithIndent(`variable = \"${vkeys[0]}\"`);
 
     this.processArray(_.get(condition, ckeys[0]), "values", vkeys[0]);
   }
