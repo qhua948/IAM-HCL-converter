@@ -114,7 +114,7 @@ export default class Converter {
   }
 
   processPrincipal(principal: any, not: boolean = false) {
-    this.appendStringLn(`${not ? "not_" : ""}principal {`);
+    this.appendStringLn(`${not ? "not_" : ""}principals {`);
 
     // Check if it is wildcard principal
     if (principal === "*") {

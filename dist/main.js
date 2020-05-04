@@ -92,7 +92,7 @@ var Converter = /** @class */ (function () {
     };
     Converter.prototype.processPrincipal = function (principal, not) {
         if (not === void 0) { not = false; }
-        this.appendStringLn((not ? "not_" : "") + "principal {");
+        this.appendStringLn((not ? "not_" : "") + "principals {");
         // Check if it is wildcard principal
         if (principal === "*") {
             principal = { AWS: "*" };
