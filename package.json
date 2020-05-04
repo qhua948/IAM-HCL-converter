@@ -1,6 +1,6 @@
 {
   "name": "iam-hcl-converter",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "AGPLv3",
   "main": "dist/main.js",
   "scripts": {

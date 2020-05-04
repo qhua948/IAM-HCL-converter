@@ -77,7 +77,8 @@ var Converter = /** @class */ (function () {
         this.indenter.logListWithIndent(header, Converter.arrayify(lodash_1["default"].get(chunk, jsonKey)).map(function (e) { return e.toString(); }));
     };
     Converter.prototype.processCondition = function (condition) {
-        this.appendStringLn("condition {");
+        this.indenter.logWithIndent("condition {");
+        this.indenter.inc();
         var ckeys = lodash_1["default"].keys(condition);
         if (ckeys.length > 1) {
             Converter.fail("Condition has too many keys");
@@ -89,10 +90,13 @@ var Converter = /** @class */ (function () {
         }
         this.indenter.logWithIndent("variable = \"" + vkeys[0] + "\"");
         this.processArray(lodash_1["default"].get(condition, ckeys[0]), "values", vkeys[0]);
+        this.indenter.dec();
+        this.indenter.logWithIndent("}");
     };
     Converter.prototype.processPrincipal = function (principal, not) {
         if (not === void 0) { not = false; }
-        this.appendStringLn((not ? "not_" : "") + "principals {");
+        this.indenter.logWithIndent((not ? "not_" : "") + "principals {");
+        this.indenter.inc();
         // Check if it is wildcard principal
         if (principal === "*") {
             principal = { AWS: "*" };
@@ -103,6 +107,8 @@ var Converter = /** @class */ (function () {
         }
         this.indenter.logWithIndent("type = \"" + pkeys[0] + "\"");
         this.processArray(principal, "identifiers", pkeys[0]);
+        this.indenter.dec();
+        this.indenter.logWithIndent("}");
     };
     Converter.prototype.processStatements = function (chunk) {
         var _this = this;

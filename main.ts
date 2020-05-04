@@ -94,7 +94,8 @@ export default class Converter {
   }
 
   processCondition(condition: any) {
-    this.appendStringLn("condition {");
+    this.indenter.logWithIndent("condition {");
+    this.indenter.inc();
 
     const ckeys = _.keys(condition);
     if (ckeys.length > 1) {
@@ -111,10 +112,14 @@ export default class Converter {
     this.indenter.logWithIndent(`variable = \"${vkeys[0]}\"`);
 
     this.processArray(_.get(condition, ckeys[0]), "values", vkeys[0]);
+    this.indenter.dec();
+
+    this.indenter.logWithIndent("}");
   }
 
   processPrincipal(principal: any, not: boolean = false) {
-    this.appendStringLn(`${not ? "not_" : ""}principals {`);
+    this.indenter.logWithIndent(`${not ? "not_" : ""}principals {`);
+    this.indenter.inc();
 
     // Check if it is wildcard principal
     if (principal === "*") {
@@ -129,6 +134,9 @@ export default class Converter {
     this.indenter.logWithIndent(`type = \"${pkeys[0]}\"`);
 
     this.processArray(principal, "identifiers", pkeys[0]);
+    this.indenter.dec();
+
+    this.indenter.logWithIndent("}");
   }
 
   processStatements(chunk: any) {
