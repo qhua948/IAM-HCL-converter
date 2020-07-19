@@ -14,7 +14,7 @@
     "@types/lodash": "^4.14.149",
     "@types/node": "^13.7.6",
     "fs": "0.0.1-security",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "typescript": "^3.8.2"
   },
   "devDependencies": {
